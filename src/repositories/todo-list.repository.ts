@@ -5,7 +5,6 @@ import {
   repository,
 } from '@loopback/repository';
 import {Todo, TodoList, TodoListRelations} from '../models';
-import {DbDataSource} from '../datasources';
 import {inject, Getter} from '@loopback/core';
 import {TodoRepository} from './todo.repository';
 

@@ -23,7 +23,7 @@ import {TodoRepository} from '../repositories';
 export class TodoController {
   constructor(
     @repository(TodoRepository)
-    public todoRepository : TodoRepository,
+    public todoRepository: TodoRepository,
   ) {}
 
   @post('/todos', {
@@ -63,6 +63,19 @@ export class TodoController {
   ): Promise<Count> {
     return this.todoRepository.count(where);
   }
+  // ==============================
+  @get('/todos/{id}/todoList', {
+    responses: {
+      '200': {
+        description: 'Todo model instance',
+        content: {'application/json': {schema: getModelSchemaRef(Todo)}},
+      },
+    },
+  })
+  async todoList(@param.path.number('id') id: number): Promise<Todo> {
+    return await this.todoRepository.findById(id);
+  }
+  // ===================================
 
   @get('/todos', {
     responses: {
@@ -70,14 +83,18 @@ export class TodoController {
         description: 'Array of Todo model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Todo)},
+            schema: {
+              type: 'array',
+              items: getModelSchemaRef(Todo, {includeRelations: true}),
+            },
           },
         },
       },
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Todo)) filter?: Filter<Todo>,
+    @param.query.object('filter', getFilterSchemaFor(Todo))
+    filter?: Filter<Todo>,
   ): Promise<Todo[]> {
     return this.todoRepository.find(filter);
   }
@@ -120,6 +137,11 @@ export class TodoController {
     responses: {
       '204': {
         description: 'Todo PATCH success',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Todo, {includeRelations: true}),
+          },
+        },
       },
     },
   })
